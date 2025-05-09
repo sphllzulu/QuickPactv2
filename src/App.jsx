@@ -71,82 +71,29 @@ function App() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Enhanced function that uses OpenAI API for contract generation
-  const generateContractWithAI = async (summary, contractType) => {
+  const generateContractWithAI = async (summary, contractType, retries = 3, delay = 1000) => {
     setIsGenerating(true);
     setError('');
     
     try {
-      // Prepare a detailed prompt based on contract type
-      const typeLabel = contractTypes.find(c => c.id === contractType)?.name || contractType;
-      const prompt = `
-Create a professionally formatted ${typeLabel} based on this summary: ${summary}.
-
-Format it with markdown headings and proper sections. Include all standard legal clauses that would be expected in this type of agreement.
-Use "R" as the currency symbol for monetary amounts (e.g., R1000).
-
-The contract should be detailed and comprehensive enough to be legally valid.
-`;
+      // ... your existing prompt setup ...
       
-      // Call OpenAI API
       const completion = await openai.chat.completions.create({
         messages: [
-          { 
-            role: 'system', 
-            content: 'You are a legal assistant specializing in drafting professional contracts. Create contracts with proper legal structure, sections, and clauses. Use markdown formatting with # for main headings and ## for section headings.' 
-          },
+          { role: 'system', content: 'You are a legal assistant...' },
           { role: 'user', content: prompt }
         ],
         model: 'gpt-3.5-turbo',
       });
       
-      const contractContent = completion.choices[0].message.content;
-      
-      // Extract key information from the generated contract for the form fields
-      const extractContractData = (content) => {
-        const data = { ...contractData };
-        
-        // Extract party names
-        const partyRegex = /\b(party|between|and)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/gi;
-        const partyMatches = [...content.matchAll(partyRegex)];
-        if (partyMatches.length >= 1 && partyMatches[0][2]) data.party1 = partyMatches[0][2];
-        if (partyMatches.length >= 2 && partyMatches[1][2]) data.party2 = partyMatches[1][2];
-        
-        // Extract monetary amounts
-        const moneyRegex = /R\s*(\d+(?:,\d+)*(?:\.\d+)?)/g;
-        const moneyMatches = [...content.matchAll(moneyRegex)];
-        if (moneyMatches.length >= 1) data.amount = moneyMatches[0][1];
-        
-        // Extract dates
-        const dateRegex = /\b(?:on|starting|from|begins? on|commences?)\s+([A-Za-z]+\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4})/gi;
-        const dateMatches = [...content.matchAll(dateRegex)];
-        if (dateMatches.length >= 1) data.startDate = dateMatches[0][1];
-        
-        // Extract address if present
-        const addressRegex = /(?:located at|property at|premises at|address:?)\s+([^.]+)/i;
-        const addressMatch = content.match(addressRegex);
-        if (addressMatch && addressMatch[1]) data.address = addressMatch[1].trim();
-        
-        // Extract term length if present
-        const termRegex = /\b(?:term|duration|period) of (\d+)\s+(?:months|month)/i;
-        const termMatch = content.match(termRegex);
-        if (termMatch && termMatch[1]) data.term = termMatch[1];
-        
-        // Extract notice period if present
-        const noticeRegex = /\b(?:notice|notification) (?:period|of) (\d+)\s+(?:days|day)/i;
-        const noticeMatch = content.match(noticeRegex);
-        if (noticeMatch && noticeMatch[1]) data.notice = noticeMatch[1];
-        
-        return data;
-      };
-      
-      const updatedData = extractContractData(contractContent);
-      setContractData(updatedData);
-      setGeneratedContract(contractContent);
-      
-      return contractContent;
+      // ... rest of your success handling ...
     } catch (error) {
+      if (error.status === 429 && retries > 0) {
+        await new Promise(res => setTimeout(res, delay));
+        return generateContractWithAI(summary, contractType, retries - 1, delay * 2);
+      }
       console.error("Error generating contract with AI:", error);
-      setError('Failed to generate contract. Please try again or check your OpenAI API key.');
+      setError(error.message || 'Failed to generate contract. Please try again.');
       return null;
     } finally {
       setIsGenerating(false);
