@@ -5,3 +5,98 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+/* Add this to your App.css or create a new CSS file */
+
+/* Contract document styling for screen view */
+.contract-document {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: justify;
+  padding: 30px;
+  max-width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+/* Title styling */
+.contract-document h1 {
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Section headings */
+.contract-document h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* Subsection headings */
+.contract-document h3 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 8px;
+}
+
+/* Paragraphs with proper indentation */
+.contract-document p {
+  margin-bottom: 10px;
+  text-indent: 20px;
+}
+
+/* Lists */
+.contract-document ul, 
+.contract-document ol {
+  padding-left: 40px;
+  margin-bottom: 15px;
+}
+
+.contract-document li {
+  margin-bottom: 8px;
+}
+
+
+    .signature-section {
+      margin-top: 20mm;
+      page-break-before: avoid;
+    }
+    
+    .signature-block {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15mm;
+    }
+    
+    .signature-party {
+      width: 45%;
+    }
+    
+    .signature-line {
+      border-bottom: 1px solid black;
+      height: 1px;
+      width: 70mm;
+      margin-bottom: 2mm;
+    }
+    
+    .signature-name {
+      font-weight: bold;
+      font-size: 12pt;
+    }
+    
+    .signature-title {
+      font-size: 10pt;
+      color: #555;
+    }
+    
+    .signature-date {
+      margin-top: 5mm;
+      font-size: 10pt;
+    }
